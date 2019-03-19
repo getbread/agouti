@@ -107,16 +107,18 @@ func (s *Session) SetWindow(window *Window) error {
 	}
 
 	request := struct {
-		Name string `json:"name"`
-	}{window.ID}
+		Name   string `json:"name"`
+		Handle string `json:"handle"`
+	}{window.ID, window.ID}
 
 	return s.Send("POST", "window", request, nil)
 }
 
 func (s *Session) SetWindowByName(name string) error {
 	request := struct {
-		Name string `json:"name"`
-	}{name}
+		Name   string `json:"name"`
+		Handle string `json:"handle"`
+	}{name, name}
 
 	return s.Send("POST", "window", request, nil)
 }
