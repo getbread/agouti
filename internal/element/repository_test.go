@@ -87,15 +87,14 @@ var _ = Describe("ElementRepository", func() {
 
 	Describe("#Get", func() {
 		var (
-			firstParentBus     *mocks.Bus
-			firstParent        *api.Element
-			secondParentBus    *mocks.Bus
-			secondParent       *api.Element
-			children           []Element
-			parentSelector     target.Selector
-			parentSelectorJSON string
-			childSelector      target.Selector
-			childSelectorJSON  string
+			firstParentBus    *mocks.Bus
+			firstParent       *api.Element
+			secondParentBus   *mocks.Bus
+			secondParent      *api.Element
+			children          []Element
+			parentSelector    target.Selector
+			childSelector     target.Selector
+			childSelectorJSON string
 		)
 
 		BeforeEach(func() {
@@ -113,7 +112,6 @@ var _ = Describe("ElementRepository", func() {
 			secondParentBus.SendCall.Result = `[{"ELEMENT": "third child"}, {"ELEMENT": "fourth child"}]`
 			client.GetElementsCall.ReturnElements = []*api.Element{firstParent, secondParent}
 			parentSelector = target.Selector{Type: target.CSS, Value: "parents"}
-			parentSelectorJSON = `{"using": "css selector", "value": "parents"}`
 			childSelector = target.Selector{Type: target.XPath, Value: "children"}
 			childSelectorJSON = `{"using": "xpath", "value": "children"}`
 			repository.Selectors = target.Selectors{parentSelector, childSelector}

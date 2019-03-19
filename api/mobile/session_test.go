@@ -18,7 +18,7 @@ var _ = Describe("Bus", func() {
 
 	BeforeEach(func() {
 		bus = &mocks.Bus{}
-		apiSession = &api.Session{bus}
+		apiSession = &api.Session{Bus: bus}
 		session = &Session{apiSession}
 	})
 
@@ -31,7 +31,7 @@ var _ = Describe("Bus", func() {
 			Expect(bus.SendCall.BodyJSON).To(MatchJSON(`
 				{"actions":[
 					{
-						"action": "tap", 
+						"action": "tap",
 						"options": {
 							"x": 1,
 							"y": 100
@@ -281,7 +281,7 @@ var _ = Describe("Bus", func() {
 			Expect(bus.SendCall.Method).To(Equal("POST"))
 			Expect(bus.SendCall.Endpoint).To(Equal("appium/settings"))
 			Expect(bus.SendCall.BodyJSON).To(MatchJSON(`{"settings":{
-				"setting1": "value1", 
+				"setting1": "value1",
 				"setting2": "value2"}
 				}`))
 		})

@@ -19,7 +19,7 @@ var _ = Describe("Element", func() {
 
 	BeforeEach(func() {
 		bus = &mocks.Bus{}
-		session = &Session{bus}
+		session = &Session{Bus: bus}
 		element = &Element{"some-id", session}
 	})
 

@@ -18,7 +18,7 @@ var _ = Describe("Session", func() {
 
 	BeforeEach(func() {
 		bus = &mocks.Bus{}
-		session = &Session{bus}
+		session = &Session{Bus: bus}
 	})
 
 	Describe("#Delete", func() {

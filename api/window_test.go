@@ -17,7 +17,7 @@ var _ = Describe("Window", func() {
 
 	BeforeEach(func() {
 		bus = &mocks.Bus{}
-		window = &Window{"some-id", &Session{bus}}
+		window = &Window{"some-id", &Session{Bus: bus}}
 	})
 
 	Describe("#Send", func() {

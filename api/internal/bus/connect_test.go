@@ -39,7 +39,7 @@ var _ = Describe(".Connect", func() {
 	})
 
 	It("should successfully make an POST request with content type application/json to the session endpoint", func() {
-		_, err := Connect(server.URL, nil, nil)
+		_, _, err := Connect(server.URL, nil, nil)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(requestMethod).To(Equal("POST"))
 		Expect(requestPath).To(Equal("/session"))
@@ -52,26 +52,26 @@ var _ = Describe(".Connect", func() {
 			path = request.URL.Path
 			return nil, errors.New("some error")
 		})}
-		_, err := Connect(server.URL, nil, client)
+		_, _, err := Connect(server.URL, nil, client)
 		Expect(err).To(MatchError(ContainSubstring("some error")))
 		Expect(path).To(Equal("/session"))
 	})
 
 	It("should return a client with a session URL", func() {
-		client, err := Connect(server.URL, nil, nil)
+		client, _, err := Connect(server.URL, nil, nil)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(client.SessionURL).To(ContainSubstring("/session/some-id"))
 	})
 
 	It("should make the request with the provided desired capabilities", func() {
-		_, err := Connect(server.URL, map[string]interface{}{"some": "json"}, nil)
+		_, _, err := Connect(server.URL, map[string]interface{}{"some": "json"}, nil)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(requestBody).To(MatchJSON(`{"desiredCapabilities": {"some": "json"}}`))
 	})
 
 	Context("when the capabilities are nil", func() {
 		It("should make the request with empty capabilities", func() {
-			_, err := Connect(server.URL, nil, nil)
+			_, _, err := Connect(server.URL, nil, nil)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(requestBody).To(MatchJSON(`{"desiredCapabilities": {}}`))
 		})
@@ -79,7 +79,7 @@ var _ = Describe(".Connect", func() {
 
 	Context("when the capabilities are invalid", func() {
 		It("should return an error", func() {
-			_, err := Connect(server.URL, map[string]interface{}{"some": func() {}}, nil)
+			_, _, err := Connect(server.URL, map[string]interface{}{"some": func() {}}, nil)
 			Expect(err).To(MatchError("json: unsupported type: func()"))
 		})
 	})
@@ -104,7 +104,7 @@ var _ = Describe(".Connect", func() {
 		})
 
 		It("should use the default HTTP client", func() {
-			_, err := Connect(server.URL, nil, nil)
+			_, _, err := Connect(server.URL, nil, nil)
 			Expect(err).To(MatchError(ContainSubstring("some error")))
 			Expect(path).To(Equal("/session"))
 		})
@@ -112,14 +112,14 @@ var _ = Describe(".Connect", func() {
 
 	Context("when the request is invalid", func() {
 		It("should return an error", func() {
-			_, err := Connect("%@#$%", nil, nil)
+			_, _, err := Connect("%@#$%", nil, nil)
 			Expect(err.Error()).To(ContainSubstring(`parse %@: invalid URL escape "%@"`))
 		})
 	})
 
 	Context("when the request fails", func() {
 		It("should return an error", func() {
-			_, err := Connect("http://#", nil, nil)
+			_, _, err := Connect("http://#", nil, nil)
 			Expect(err.Error()).To(ContainSubstring("#/session"))
 		})
 	})
@@ -127,7 +127,7 @@ var _ = Describe(".Connect", func() {
 	Context("when the response contains invalid JSON", func() {
 		It("should return an error", func() {
 			responseBody = "$$$"
-			_, err := Connect(server.URL, nil, nil)
+			_, _, err := Connect(server.URL, nil, nil)
 			Expect(err).To(MatchError("invalid character '$' looking for beginning of value"))
 		})
 	})
@@ -135,7 +135,7 @@ var _ = Describe(".Connect", func() {
 	Context("when the response does not contain a session ID", func() {
 		It("should return an error", func() {
 			responseBody = "{}"
-			_, err := Connect(server.URL, nil, nil)
+			_, _, err := Connect(server.URL, nil, nil)
 			Expect(err).To(MatchError("failed to retrieve a session ID"))
 		})
 	})
@@ -143,14 +143,14 @@ var _ = Describe(".Connect", func() {
 	Context("when the response has fallback session ID", func() {
 		It("can extract fallback sesssion ID", func() {
 			responseBody = `{"value": {"sessionId": "fallback-id"}}`
-			client, err := Connect(server.URL, nil, nil)
+			client, _, err := Connect(server.URL, nil, nil)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(client.SessionURL).To(ContainSubstring("/session/fallback-id"))
 		})
 
 		It("uses primary session ID if both IDs are available", func() {
 			responseBody = `{"sessionId": "primary-id", "value": {"sessionId": "fallback-id"}}`
-			client, err := Connect(server.URL, nil, nil)
+			client, _, err := Connect(server.URL, nil, nil)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(client.SessionURL).To(ContainSubstring("/session/primary-id"))
 		})

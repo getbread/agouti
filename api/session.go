@@ -9,8 +9,17 @@ import (
 	"github.com/sclevine/agouti/api/internal/bus"
 )
 
+type Dialect byte
+
+const (
+	DialectUnknown Dialect = iota
+	DialectOSS
+	DialectW3C
+)
+
 type Session struct {
 	Bus
+	Dialect Dialect
 }
 
 type Bus interface {
@@ -26,7 +35,7 @@ func NewWithClient(sessionURL string, client *http.Client) *Session {
 		client = http.DefaultClient
 	}
 	busClient := &bus.Client{sessionURL, client}
-	return &Session{busClient}
+	return &Session{busClient, DialectUnknown}
 }
 
 func Open(url string, capabilities map[string]interface{}) (*Session, error) {
@@ -34,11 +43,17 @@ func Open(url string, capabilities map[string]interface{}) (*Session, error) {
 }
 
 func OpenWithClient(url string, capabilities map[string]interface{}, client *http.Client) (*Session, error) {
-	busClient, err := bus.Connect(url, capabilities, client)
+	busClient, hasStatus, err := bus.Connect(url, capabilities, client)
 	if err != nil {
 		return nil, err
 	}
-	return &Session{busClient}, nil
+
+	dialect := DialectW3C
+	if hasStatus {
+		dialect = DialectOSS
+	}
+
+	return &Session{busClient, dialect}, nil
 }
 
 func (s *Session) Delete() error {
@@ -106,9 +121,16 @@ func (s *Session) SetWindow(window *Window) error {
 		return errors.New("nil window is invalid")
 	}
 
-	request := struct {
-		Name string `json:"name"`
-	}{window.ID}
+	var request interface{}
+	if s.Dialect == DialectW3C {
+		request = struct {
+			Handle string `json:"handle"`
+		}{window.ID}
+	} else {
+		request = struct {
+			Name string `json:"name"`
+		}{window.ID}
+	}
 
 	return s.Send("POST", "window", request, nil)
 }
