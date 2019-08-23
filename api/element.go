@@ -11,6 +11,10 @@ type elementResult struct {
 	W3CElement string `json:"element-6066-11e4-a52e-4f735466cecf"`
 }
 
+func newElementResult(id string) elementResult {
+	return elementResult{id, id}
+}
+
 func (er elementResult) ID() string {
 	if er.Element != "" {
 		return er.Element

@@ -226,10 +226,7 @@ func (s *Session) Frame(frame *Element) error {
 	var elementID interface{}
 
 	if frame != nil {
-		elementID = struct {
-			Element    string `json:"ELEMENT"`
-			W3CElement string `json:"element-6066-11e4-a52e-4f735466cecf"`
-		}{frame.ID, frame.ID}
+		elementID = newElementResult(frame.ID)
 	}
 
 	request := struct {
