@@ -237,7 +237,10 @@ func (s *Session) Frame(frame *Element) error {
 }
 
 func (s *Session) FrameParent() error {
-	return s.Send("POST", "frame/parent", nil, nil)
+	request := struct {
+		ID interface{} `json:"id"`
+	}{nil}
+	return s.Send("POST", "frame/parent", request, nil)
 }
 
 func (s *Session) Execute(body string, arguments []interface{}, result interface{}) error {
