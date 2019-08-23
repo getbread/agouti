@@ -227,7 +227,8 @@ func (s *Session) Frame(frame *Element) error {
 
 	if frame != nil {
 		elementID = struct {
-			Element string `json:"ELEMENT"`
+			Element    string `json:"ELEMENT"`
+			W3CElement string `json:"element-6066-11e4-a52e-4f735466cecf"`
 		}{frame.ID}
 	}
 
